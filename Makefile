@@ -275,14 +275,12 @@ endif
 
 export
 unexport INCLUDES
-INCLUDES=-I.
+INCLUDES=-I. -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include
 
-OBJS = $(EXTRA_OBJS) \
-       board.o gogui.o gtp.o joseki.o move.o ownermap.o cinkgo.o pattern3.o pattern.o patternsp.o \
-       patternprob.o playout.o probdist.o random.o stone.o timeinfo.o network.o fbook.o chat.o util.o
+OBJS = $(EXTRA_OBJS) board.o player.o player_builder.o cinkgo.o util.o
 
 # Low-level dependencies last
-SUBDIRS   = $(EXTRA_SUBDIRS) uct uct/policy t-unit t-predict engines playout tactics
+SUBDIRS   = $(EXTRA_SUBDIRS) uct util mcts feature
 DATAFILES = patterns_mm.gamma patterns_mm.spat book.dat golast19.prototxt golast.trained joseki19.gtp
 
 ###############################################################################################################
@@ -341,7 +339,7 @@ spudfrog: FORCE
 build.h: .git/HEAD .git/index Makefile
 	+@make spudfrog
 	@echo "[make] build.h"
-	@CC="$(CC)" CFLAGS="$(CFLAGS)" ./genbuild > $@
+	@CC="$(CC)" CFLAGS="$(CFLAGS)" ./genbuild.sh > $@
 
 # Run unit tests
 test: FORCE

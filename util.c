@@ -10,6 +10,17 @@
 #include "cinkgo.h"
 #include "util.h"
 
+static void vwarning(const char *format, va_list ap) {
+	vfprintf(stderr, format, ap);
+}
+
+void warning(const char *format, ...) {
+	va_list ap;
+	va_start(ap, format);
+	vwarning(format, ap);
+	va_end(ap);
+}
+
 void die(const char *format, ...) {
 	va_list ap;
 	va_start(ap, format);
@@ -22,3 +33,4 @@ void fail(char *msg) {
 	warning("%s: %s\n", msg, strerror(errno));
 	exit(42);
 }
+

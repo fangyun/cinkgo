@@ -1,0 +1,3 @@
+uct.o: uct.c /usr/include/stdc-predef.h
+uct.c :
+/usr/include/stdc-predef.h :

@@ -1,8 +1,11 @@
+#define DEBUG
 #include <getopt.h>
 #include "cinkgo.h"
 #include "util.h"
 #include "version.h"
+#include "debug.h"
 
+int debug_level = 3;
 static char* DEFAULT_GTP_COMMANDS[] = { "black", "boardsize", "clear_board", "final_score", "final_status_list",
                                         "fixed_handicap", "genmove", "genmove_black", "genmove_white", "gogui-analyze_commands", "gogui-get-wins",
                                         "gogui-search-values", "known_command", "kgs-game_over", "kgs-genmove_cleanup", "komi", "list_commands",
@@ -27,7 +30,6 @@ static char* DEFAULT_GTP_COMMANDS[] = { "black", "boardsize", "clear_board", "fi
 //*INDENT-OFF*
 static struct option longopts[] = {
 	{ "biasdelay", required_argument, 0, OPT_BIASDELAY },
-	{ "boardsize", required_argument, 0, OPT_BOARDSIZE },
 	{ "nobook", no_argument, 0, OPT_NOBOOK },
 	{ "komi", required_argument, 0, OPT_KOMI },
 	{ "nolgrf2", no_argument, 0, OPT_NOLGRF2 },
@@ -37,8 +39,9 @@ static struct option longopts[] = {
 	{ "norave", no_argument, 0, OPT_NORAVE },
 	{ "shape-bias", required_argument, 0, OPT_SHAPE_BIAS },
 	{ "shape-pattern-size", required_argument, 0, OPT_SHAPE_PATTERN_SIZE },
-	{ "shape-scaling-factor", no_argument, 0, OPT_SHAPE_SCALING_FACTOR },
-	{ "threads", no_argument, 0, OPT_THREADS },
+	{ "shape-scaling-factor", required_argument, 0, OPT_SHAPE_SCALING_FACTOR },
+	{ "threads", required_argument, 0, OPT_THREADS },
+	{ "debug-level", required_argument, 0, 'd' },
 	{ "log-file", required_argument, 0, 'o' },
 	{ "time-management", required_argument, 0, 't' },
 	{ "help", no_argument, 0, 'h' },
@@ -47,69 +50,102 @@ static struct option longopts[] = {
 };
 //*INDENT-ON*
 
-static cinkgo_t* cinkgo=cinkgo_init();
-
-int main(int argc, char *argv[]) {
-    handle_command_line_arguments(argc,argv);
-    free(cinkgo);
-    return 0;
-}
 
 cinkgo_t* cinkgo_init() {
-    cinkgo_t* c=calloc2(1, sizeof(struct cinkgo_t));
+    cinkgo_t* c=calloc2(1, sizeof(cinkgo_t));
     return c;
 }
 
-void handle_command_line_arguments(int argc, char* argv[], cinkgo_t cgo) {
-    player_builder_t player_builder;
+static void usage() {
+    fprintf(stderr, "Usage: cinkgo [OPTIONS]\n\n");
+    fprintf(stderr, "Options: \n"
+            "  -h, --help                        show usage \n"
+            "  -d, --debug-level LEVEL           set debug level \n"
+            "  -g, --gtp-port [HOST:]GTP_PORT    read gtp commands from network instead of stdin. \n"
+            "                                    listen on given port if HOST not given, otherwise \n"
+            "                                    connect to remote host. \n"
+            "  -o  --log-file FILE               log to FILE instead of stderr \n"
+            "  -t, --time-management TIME_MGMT   set time management.Valid values: exiting,uniform,simple \n"
+            "  -v, --version                     show version \n"
+            "      --nobook                      no use opening book \n"
+    		"      --biasdelay DELAY             bias delay \n"
+    		"      --nobook                      disable opening book \n"
+    		"      --komi KOMI                   set komi value \n"
+    		"      --nolgrf2                     disable LGRF2 \n"
+    		"      --memory SIZE                 set memory size \n"
+    		"      --msec MILLISECOND            millisecond per move \n"
+    		"      --ponder                      enable ponder \n"
+    		"      --norave                      disable RAVE \n"
+    		"      --shape-bias BIAS             set shape bias \n"
+    		"      --shape-pattern-size SIZE     set shape pattern size \n"
+    		"      --shape-scaling-factor FACTOR set shape scaling factor \n"
+            " \n");
+}
+
+static void show_version(FILE *s) {
+    fprintf(s, "Cinkgo version %s\n", CINKGO_VERSION);
+    if (!DEBUGL(2))
+        return;
+
+    fprintf(s, "git %s\n", CINKGO_VERGIT);
+
+    /* Build info */
+    fprintf(s, "%s\n\n", CINKGO_VERBUILD);
+}
+
+void handle_command_line_arguments(int argc, char* argv[], cinkgo_t* cgo) {
+    player_builder_t* player_builder=player_builder_init();
     int opt;
     int option_index;
     /* Leading ':' -> we handle error messages. */
-    while ((opt = getopt_long(argc, argv, ":ho:t:v", longopts, &option_index)) != -1) {
+    while ((opt = getopt_long(argc, argv, ":hvd:o:t:", longopts, &option_index)) != -1) {
         switch (opt) {
         case OPT_BIASDELAY:
-            player_builder.bias_delay=atoi(optarg);
+            player_builder->bias_delay=atoi(optarg);
             break;
         case OPT_BOARDSIZE:
-            player_builder.board_size=atoi(optarg);
+            player_builder->board_size=atoi(optarg);
             break;
         case OPT_NOBOOK:
-            player_builder.book=false;
+            player_builder->book=false;
             break;
         case OPT_KOMI:
-            player_builder.komi=atof(optarg);
+            player_builder->komi=atof(optarg);
             break;
         case OPT_NOLGRF2:
-            player_builder.lgrf2=false;
+            player_builder->lgrf2=false;
             break;
         case OPT_MEMORY:
-            player_builder.memory=atoi(optarg);
+            player_builder->memory=atoi(optarg);
             break;
         case OPT_MSEC:
-            player_builder.msec=atoi(optarg);
+            player_builder->msec=atoi(optarg);
             break;
         case OPT_PONDER:
-            player_builder.ponder=true;
+            player_builder->ponder=true;
             break;
         case OPT_NORAVE:
-            player_builder.rave=false;
+            player_builder->rave=false;
             break;
         case OPT_SHAPE_BIAS:
-            player_builder.shape_bias=atoi(optarg);
+            player_builder->shape_bias=atoi(optarg);
             break;
         case OPT_SHAPE_PATTERN_SIZE:
-            player_builder.shape_pattern_size=atoi(optarg);
+            player_builder->shape_pattern_size=atoi(optarg);
             break;
         case OPT_SHAPE_SCALING_FACTOR:
-            player_builder.shape_scaling_factor=atof(optarg);
+            player_builder->shape_scaling_factor=atof(optarg);
             break;
         case OPT_THREADS:
-            player_builder.threads=atoi(optarg);
+            player_builder->threads=atoi(optarg);
             break;
+		case 'd':
+			debug_level = atoi(optarg);
+			break;
         case 'o':
-            cgo.log = fopen(optarg, "w");
-            if (!cgo.log) fail(optarg);
-            fclose(cgo.log);
+            cgo->log = fopen(optarg, "w");
+            if (!cgo->log) fail(optarg);
+            fclose(cgo->log);
             if (!freopen(optarg, "w", stderr))  fail("freopen()");
             setlinebuf(stderr);
             break;
@@ -117,7 +153,7 @@ void handle_command_line_arguments(int argc, char* argv[], cinkgo_t cgo) {
             usage();
             exit(0);
         case 't':
-            player_builder.manager_type=optarg;
+            player_builder->manager_type=optarg;
             break;
         case 'v':
             show_version(stdout);
@@ -131,33 +167,16 @@ void handle_command_line_arguments(int argc, char* argv[], cinkgo_t cgo) {
                 "Try 'cinkgo --help' for more information.\n", argv[optind-1]);
         }
     }
-    cgo.player_builder=player_builder;
-    cgo.player=player_builder_build();
+    cgo->player_builder=player_builder;
+    cgo->player=player_builder->build();
 }
 
 
-static void usage() {
-    fprintf(stderr, "Usage: cinkgo [OPTIONS] [ENGINE_ARGS]\n\n");
-    fprintf(stderr, "Options: \n"
-            "  -d, --debug-level LEVEL           set debug level \n"
-            "      --nobook                      no use opening book \n"
-            "  -g, --gtp-port [HOST:]GTP_PORT    read gtp commands from network instead of stdin. \n"
-            "                                    listen on given port if HOST not given, otherwise \n"
-            "                                    connect to remote host. \n"
-            "  -h, --help                        show usage \n"
-            "  -o  --log-file FILE               log to FILE instead of stderr \n"
-            "  -t, --time TIME_SETTINGS          force basic time settings (override kgs/gtp time settings) \n"
-            "  -v, --version                     show version \n"
-            " \n");
-}
 
-static void show_version(FILE *s) {
-    fprintf(s, "Cinkgo version %s\n", CINKGO_VERSION);
-    if (!DEBUGL(2))
-        return;
 
-    fprintf(s, "git %s\n", CINKGO_VERGIT);
-
-    /* Build info */
-    fprintf(s, "%s\n\n", CINKGO_VERBUILD);
+int main(int argc, char *argv[]) {
+	cinkgo_t* cinkgo= cinkgo_init();
+	handle_command_line_arguments(argc,argv, cinkgo);
+    free(cinkgo);
+    return 0;
 }

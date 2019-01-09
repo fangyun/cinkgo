@@ -24,6 +24,10 @@
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.585413386" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.696122585" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base">
+								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="gnu.c.compiler.option.include.paths.1299022184" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="/usr/include/glib-2.0"/>
+									<listOptionValue builtIn="false" value="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1960088583" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.1262958872" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base"/>
@@ -38,16 +42,6 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<folderInfo id="cdt.managedbuild.toolchain.gnu.base.1503947491.1331735582" name="/" resourcePath="engines">
-						<toolChain id="cdt.managedbuild.toolchain.gnu.base.286269435" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.base" unusedChildren="">
-							<tool id="cdt.managedbuild.tool.gnu.archiver.base.479872690" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.1581975325"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.2125678239" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base.1777115167"/>
-							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.362611304" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base.696122585"/>
-							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.1561577903" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base.1262958872"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.base.1815126501" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base.1241495749"/>
-							<tool id="cdt.managedbuild.tool.gnu.assembler.base.1035861816" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base.588522713"/>
-						</toolChain>
-					</folderInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
@@ -58,9 +52,6 @@
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="cinkgo.null.29548400" name="cinkgo"/>
-	</storageModule>
-	<storageModule moduleId="scannerConfiguration">
-		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
@@ -79,5 +70,14 @@
 				<runAllBuilders>true</runAllBuilders>
 			</target>
 		</buildTargets>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.1503947491;cdt.managedbuild.toolchain.gnu.base.1503947491.1540566957;cdt.managedbuild.tool.gnu.c.compiler.base.696122585;cdt.managedbuild.tool.gnu.c.compiler.input.1960088583">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.base.1503947491;cdt.managedbuild.toolchain.gnu.base.1503947491.1540566957;cdt.managedbuild.tool.gnu.cpp.compiler.base.1777115167;cdt.managedbuild.tool.gnu.cpp.compiler.input.585413386">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
 	</storageModule>
 </cproject>

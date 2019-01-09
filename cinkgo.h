@@ -1,6 +1,7 @@
 #ifndef CINKGO_H_
 #define CINKGO_H_
 
+#include <stdio.h>
 #include "player_builder.h"
 
 typedef struct{
@@ -10,10 +11,10 @@ typedef struct{
 	FILE* in;
 	FILE* out;
 	FILE* log;
-	struct player_t player;
-	player_builder_t player_builder;
+	player_t* player;
+	player_builder_t* player_builder;
 } cinkgo_t;
 
-cinkgo_t cinkgo_init();
+cinkgo_t* cinkgo_init();
 
 #endif /* CINKGO_H_ */
