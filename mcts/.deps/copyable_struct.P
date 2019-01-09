@@ -158,7 +158,8 @@ copyable_struct.o: copyable_struct.c /usr/include/stdc-predef.h \
  ../feature/stone_count_observer.h \
  ../feature/../score/chinese_playout_scorer.h \
  ../feature/../score/../board.h ../score/chinese_final_scorer.h \
- ../score/chinese_playout_scorer.h
+ ../score/chinese_playout_scorer.h ../feature/escape_suggester.h \
+ ../feature/atari_observer.h ../feature/atari_observer.h
 copyable_struct.c :
 /usr/include/stdc-predef.h :
 copyable_struct.h :
@@ -350,3 +351,6 @@ copyable_struct.h :
 ../feature/../score/../board.h :
 ../score/chinese_final_scorer.h :
 ../score/chinese_playout_scorer.h :
+../feature/escape_suggester.h :
+../feature/atari_observer.h :
+../feature/atari_observer.h :
