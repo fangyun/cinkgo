@@ -1,4 +1,4 @@
-board.o: board.c /usr/include/stdc-predef.h board.h util.h \
+board.o: board.c /usr/include/stdc-predef.h board.h coord.h util.h \
  /usr/include/stdlib.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
@@ -57,6 +57,7 @@ board.o: board.c /usr/include/stdc-predef.h board.h util.h \
 board.c :
 /usr/include/stdc-predef.h :
 board.h :
+coord.h :
 util.h :
 /usr/include/stdlib.h :
 /usr/include/x86_64-linux-gnu/bits/libc-header-start.h :

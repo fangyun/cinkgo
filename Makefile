@@ -185,12 +185,12 @@ ifdef MAC
 else
 ##############################################################################
 # Linux
-        # Static build ?
-        # LINUX_STATIC=1
+    # Static build ?
+    # LINUX_STATIC=1
 
 	SYS_CFLAGS  := $(TUNE)
 	SYS_LDFLAGS := -pthread -rdynamic
-	SYS_LIBS    := -lm -lrt -ldl
+	SYS_LIBS    := -lm -lrt -ldl -lglib-2.0
 	DCNN_LIBS   := -lcaffe -lboost_system -lglog -lstdc++ $(SYS_LIBS)
 
 	ifdef LINUX_STATIC
@@ -277,10 +277,10 @@ export
 unexport INCLUDES
 INCLUDES=-I. -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include
 
-OBJS = $(EXTRA_OBJS) board.o player.o player_builder.o cinkgo.o util.o
+OBJS = $(EXTRA_OBJS) util.o coord.o board.o player.o player_builder.o cinkgo.o
 
 # Low-level dependencies last
-SUBDIRS   = $(EXTRA_SUBDIRS) uct util mcts feature
+SUBDIRS   = $(EXTRA_SUBDIRS) mcts thirdparty uct utils feature score book
 DATAFILES = patterns_mm.gamma patterns_mm.spat book.dat golast19.prototxt golast.trained joseki19.gtp
 
 ###############################################################################################################

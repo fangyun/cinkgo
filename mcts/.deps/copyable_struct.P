@@ -153,13 +153,14 @@ copyable_struct.o: copyable_struct.c /usr/include/stdc-predef.h \
  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
  /usr/include/x86_64-linux-gnu/bits/sys_errlist.h \
  /usr/include/x86_64-linux-gnu/bits/stdio.h \
- /usr/include/x86_64-linux-gnu/bits/stdio2.h ../board.h \
+ /usr/include/x86_64-linux-gnu/bits/stdio2.h ../board.h ../coord.h \
  ../feature/history_observer.h ../feature/../board.h \
  ../feature/stone_count_observer.h \
  ../feature/../score/chinese_playout_scorer.h \
  ../feature/../score/../board.h ../score/chinese_final_scorer.h \
- ../score/chinese_playout_scorer.h ../feature/escape_suggester.h \
- ../feature/atari_observer.h ../feature/atari_observer.h
+ ../score/../board.h ../score/chinese_playout_scorer.h \
+ ../feature/escape_suggester.h ../feature/atari_observer.h \
+ ../feature/atari_observer.h
 copyable_struct.c :
 /usr/include/stdc-predef.h :
 copyable_struct.h :
@@ -344,12 +345,14 @@ copyable_struct.h :
 /usr/include/x86_64-linux-gnu/bits/stdio.h :
 /usr/include/x86_64-linux-gnu/bits/stdio2.h :
 ../board.h :
+../coord.h :
 ../feature/history_observer.h :
 ../feature/../board.h :
 ../feature/stone_count_observer.h :
 ../feature/../score/chinese_playout_scorer.h :
 ../feature/../score/../board.h :
 ../score/chinese_final_scorer.h :
+../score/../board.h :
 ../score/chinese_playout_scorer.h :
 ../feature/escape_suggester.h :
 ../feature/atari_observer.h :

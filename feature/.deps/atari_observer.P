@@ -1,5 +1,5 @@
 atari_observer.o: atari_observer.c /usr/include/stdc-predef.h \
- atari_observer.h ../board.h /usr/include/stdlib.h \
+ atari_observer.h ../board.h ../coord.h /usr/include/stdlib.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -45,6 +45,7 @@ atari_observer.c :
 /usr/include/stdc-predef.h :
 atari_observer.h :
 ../board.h :
+../coord.h :
 /usr/include/stdlib.h :
 /usr/include/x86_64-linux-gnu/bits/libc-header-start.h :
 /usr/include/features.h :

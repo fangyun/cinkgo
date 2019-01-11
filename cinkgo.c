@@ -94,7 +94,7 @@ static void show_version(FILE *s) {
 }
 
 void handle_command_line_arguments(int argc, char* argv[], cinkgo_t* cgo) {
-    player_builder_t* player_builder=player_builder_init();
+    player_builder_t* player_builder=player_builder_new();
     int opt;
     int option_index;
     /* Leading ':' -> we handle error messages. */
@@ -168,7 +168,7 @@ void handle_command_line_arguments(int argc, char* argv[], cinkgo_t* cgo) {
         }
     }
     cgo->player_builder=player_builder;
-    cgo->player=player_builder->build();
+    cgo->player=player_builder_build(player_builder);
 }
 
 

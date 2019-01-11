@@ -1,8 +1,28 @@
-#ifndef PLAYER_H_
-#define PLAYER_H_
+#ifndef CINKGO_PLAYER_H_
+#define CINKGO_PLAYER_H_
+
+#include <stdbool.h>
+#include "mcts/copyable_struct.h"
+#include "mcts/time_descender.h"
+#include "mcts/tree_updater.h"
+#include "mcts/mc_runnable.h"
+#include "feature/history_observer.h"
+#include "score/chinese_final_scorer.h"
+#include "book/opening_book.h"
+#include "board.h"
+#include "coord.h"
 
 typedef struct {
-	char* name;
+	board_t* board;
+	coord_t* coord;
+	history_observer_t* history_observer;
+	chinese_final_scorer_t* scorer;
+	mc_runnable_t** runnables;
+	time_descender_t* descender;
+	tree_updater_t* updater;;
+	opening_book_t* book;
+	bool time_left_was_sent;
 } player_t;
 
-#endif /* PLAYER_H_ */
+player_t* player_new(int threads, copyable_struct_t* stuff);
+#endif /* CINKGO_PLAYER_H_ */

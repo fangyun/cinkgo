@@ -1,5 +1,6 @@
 escape_suggester.o: escape_suggester.c /usr/include/stdc-predef.h \
- escape_suggester.h atari_observer.h ../board.h /usr/include/stdlib.h \
+ escape_suggester.h atari_observer.h ../board.h ../coord.h \
+ /usr/include/stdlib.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -46,6 +47,7 @@ escape_suggester.c :
 escape_suggester.h :
 atari_observer.h :
 ../board.h :
+../coord.h :
 /usr/include/stdlib.h :
 /usr/include/x86_64-linux-gnu/bits/libc-header-start.h :
 /usr/include/features.h :

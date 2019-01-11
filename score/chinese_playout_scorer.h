@@ -3,11 +3,11 @@
 
 #include "../board.h"
 
-typedef struct{
+typedef struct {
 	board_t* board;
 	double komi;
-}chinese_playout_scorer_t;
+} chinese_playout_scorer_t;
 
-chinese_playout_scorer_t* chinese_playout_scorer_new();
+chinese_playout_scorer_t* chinese_playout_scorer_new(board_t* b, double komi);
 
 #endif /* CINKGO_SCORE_CHINESE_PLAYOUT_SCORER_H_ */

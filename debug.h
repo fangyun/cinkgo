@@ -1,7 +1,11 @@
-#ifndef DEBUG_H
-#define DEBUG_H
+#ifndef CINKGO_DEBUG_H
+#define CINKGO_DEBUG_H
 
 #include <stdbool.h>
+
+#define INFO_LEVEL 10
+#define DEBUG_LEVEL 5
+#define TRACE_LEVEL 1
 
 #ifdef DEBUG
 #define DEBUGL_(l, n) (unlikely((l) > (n)))
@@ -25,4 +29,5 @@ extern long verbose_logs;
 #define DEBUGV(verbose, n) (DEBUGL(n) && (!(verbose) || ++verbose_logs < MAX_VERBOSE_LOGS))
 #define DEBUGVV(n) DEBUGV(true, (n))
 
+#define info(msg) {if(DEBUGL(INFO_LEVEL)) fprintf(stderr, msg);}
 #endif

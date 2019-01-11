@@ -1,5 +1,5 @@
 history_observer.o: history_observer.c /usr/include/stdc-predef.h \
- history_observer.h ../board.h ../util.h /usr/include/stdlib.h \
+ history_observer.h ../board.h ../coord.h ../util.h /usr/include/stdlib.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/x86_64-linux-gnu/sys/cdefs.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -58,6 +58,7 @@ history_observer.c :
 /usr/include/stdc-predef.h :
 history_observer.h :
 ../board.h :
+../coord.h :
 ../util.h :
 /usr/include/stdlib.h :
 /usr/include/x86_64-linux-gnu/bits/libc-header-start.h :

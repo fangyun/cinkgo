@@ -1,6 +1,8 @@
 #ifndef CINKGO_UTIL_SHORT_LIST_H_
 #define CINKGO_UTIL_SHORT_LIST_H_
 
+#include <stdbool.h>
+
 typedef struct {
 	int size;
 	short* data;

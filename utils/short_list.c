@@ -1,9 +1,10 @@
+#include "../utils/short_list.h"
+
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include "short_list.h"
 #include "../thirdparty/mersenne_twister_fast.h"
 #include "../util.h"
 

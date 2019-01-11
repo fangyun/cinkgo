@@ -41,7 +41,8 @@ stone_count_observer.o: stone_count_observer.c /usr/include/stdc-predef.h \
  /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
  /usr/include/x86_64-linux-gnu/bits/stdlib.h stone_count_observer.h \
- ../board.h ../score/chinese_playout_scorer.h ../score/../board.h
+ ../board.h ../coord.h ../score/chinese_playout_scorer.h \
+ ../score/../board.h
 stone_count_observer.c :
 /usr/include/stdc-predef.h :
 /usr/include/stdlib.h :
@@ -90,5 +91,6 @@ stone_count_observer.c :
 /usr/include/x86_64-linux-gnu/bits/stdlib.h :
 stone_count_observer.h :
 ../board.h :
+../coord.h :
 ../score/chinese_playout_scorer.h :
 ../score/../board.h :
