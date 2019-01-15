@@ -10,6 +10,10 @@
 #include "cinkgo.h"
 #include "util.h"
 
+int str_prefix(char *prefix, char *str) {
+	return (!strncmp(prefix, str, strlen(prefix)));
+}
+
 static void vwarning(const char *format, va_list ap) {
 	vfprintf(stderr, format, ap);
 }

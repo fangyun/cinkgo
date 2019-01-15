@@ -5,9 +5,11 @@
 #include <stdio.h>
 #include <string.h>
 
+#define array_size(x) (sizeof(x)/sizeof(x[0]))
 #define likely(x) __builtin_expect(!!(x), 1)
 #define unlikely(x) __builtin_expect((x), 0)
 
+int str_prefix(char *prefix, char *str);
 /* Warn user (popup on windows) */
 void warning(const char *format, ...);
 

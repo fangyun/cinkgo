@@ -5,7 +5,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include "../thirdparty/mersenne_twister_fast.h"
+
+#include "../thirdparty/hash.h"
 #include "../util.h"
 
 void short_list_init(short_list_t* list, int capacity) {
@@ -60,8 +61,8 @@ short short_list_remove_last(short_list_t* list) {
 	return list->data[list->size];
 }
 
-short short_list_remove_random(short_list_t* list, mersenne_twister_fast_t* random) {
-	int index = mersenne_twister_next_int(random, list->size);
+short short_list_remove_random(short_list_t* list, hash_t* random) {
+	int index = randome_next_int(random, list->size);
 	short temp = list->data[index];
 	list->size--;
 	list->data[index] = list->data[list->size];

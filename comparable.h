@@ -1,10 +1,10 @@
 #ifndef CINKGO_COMPARABLE_H_
 #define CINKGO_COMPARABLE_H_
 
-#include "player_builder.h"
+#include "engine_builder.h"
 
 typedef enum {
-	BOARD, COORD, TYPE_MAX
+	T_BOARD, T_COORD, T_HISTORY_OBSERVER, T_SCORER, TYPE_MAX
 } type_t;
 
 typedef struct {
@@ -12,6 +12,6 @@ typedef struct {
 	void* data;
 } comparable_t;
 
-typedef comparable_t* (*comparable_new_t)(player_builder_t* pb);
+typedef comparable_t* (*comparable_new_t)(engine_builder_t* pb);
 
 #endif /* CINKGO_COMPARABLE_H_ */

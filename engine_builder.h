@@ -1,5 +1,5 @@
-#ifndef CINKGO_PLAYER_BUILDER_H_
-#define CINKGO_PLAYER_BUILDER_H_
+#ifndef CINKGO_ENGINE_BUILDER_H_
+#define CINKGO_ENGINE_BUILDER_H_
 
 #include <stdbool.h>
 
@@ -18,8 +18,8 @@ typedef struct{
 	float shape_scaling_factor;
 	int threads;
 	char* manager_type;
-} player_builder_t;
+} engine_builder_t;
 
-player_builder_t* player_builder_new();
+engine_builder_t* engine_builder_new();
 
-#endif /* CINKGO_PLAYER_BUILDER_H_ */
+#endif /* CINKGO_ENGINE_BUILDER_H_ */

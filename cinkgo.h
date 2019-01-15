@@ -2,8 +2,10 @@
 #define CINKGO_H_
 
 #include <stdio.h>
-#include "player.h"
-#include "player_builder.h"
+#include <glib.h>
+
+#include "engine.h"
+#include "engine_builder.h"
 
 #define OPT_BIASDELAY   256
 #define OPT_BOARDSIZE   257
@@ -22,14 +24,16 @@
 typedef struct {
 	int command_id;
 	char* command_line_args;
-	char* known_commands;
-	FILE* in;
-	FILE* out;
+	GList* known_commands;
 	FILE* log;
-	player_t* player;
-	player_builder_t* player_builder;
+	engine_t* engine;
+	engine_builder_t* engine_builder;
+	board_t* board;
 } cinkgo_t;
 
-cinkgo_t* cinkgo_init();
+cinkgo_t* cinkgo_new();
+void cinkgo_done();
+
+extern comparable_new_t comparable_new[TYPE_MAX];
 
 #endif /* CINKGO_H_ */
