@@ -4,6 +4,7 @@
 #include "util.h"
 #include "version.h"
 #include "debug.h"
+#include "comparable.h"
 
 int debug_level = 3;
 static char* DEFAULT_GTP_COMMANDS[] = { "black", "boardsize", "clear_board", "final_score", "final_status_list",
@@ -12,20 +13,6 @@ static char* DEFAULT_GTP_COMMANDS[] = { "black", "boardsize", "clear_board", "fi
                                         "loadsgf", "name", "play", "playout_count", "protocol_version", "quit", "reg_genmove", "showboard", "time_left",
                                         "time_settings", "undo", "version", "white", 0
                                       };
-
-#define OPT_BIASDELAY   256
-#define OPT_BOARDSIZE   257
-#define OPT_NOBOOK      258
-#define OPT_KOMI 259
-#define OPT_NOLGRF2 260
-#define OPT_MEMORY      261
-#define OPT_MSEC    262
-#define OPT_PONDER        263
-#define OPT_NORAVE      264
-#define OPT_SHAPE_BIAS 265
-#define OPT_SHAPE_PATTERN_SIZE 266
-#define OPT_SHAPE_SCALING_FACTOR 267
-#define OPT_THREADS 268
 
 //*INDENT-OFF*
 static struct option longopts[] = {
@@ -50,6 +37,7 @@ static struct option longopts[] = {
 };
 //*INDENT-ON*
 
+static comparable_new_t comparable_new[TYPE_MAX] = { comparable_board_new, comparable_coord_new };
 
 cinkgo_t* cinkgo_init() {
     cinkgo_t* c=calloc2(1, sizeof(cinkgo_t));

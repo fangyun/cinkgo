@@ -277,7 +277,7 @@ export
 unexport INCLUDES
 INCLUDES=-I. -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include
 
-OBJS = $(EXTRA_OBJS) util.o coord.o board.o player.o player_builder.o cinkgo.o
+OBJS = $(EXTRA_OBJS) util.o player_builder.o coord.o board.o player.o cinkgo.o 
 
 # Low-level dependencies last
 SUBDIRS   = $(EXTRA_SUBDIRS) mcts thirdparty uct utils feature score book
@@ -292,7 +292,7 @@ all: build.h
 	+@make all-recursive cinkgo
 
 debug fast quick O0:
-	+@make OPT=-O0
+	+@make OPT=-O0 -g
 
 opt slow O3:
 	+@make OPT=-O3

@@ -1,6 +1,5 @@
 #define DEBUG
 #include <stdio.h>
-#include "player.h"
 #include "player_builder.h"
 #include "util.h"
 #include "debug.h"
@@ -25,15 +24,4 @@ player_builder_t* player_builder_new() {
 	pb->shape_pattern_size = 5;
 	pb->shape_bias = 20;
 	return pb;
-}
-
-player_t* player_builder_build(player_builder_t* pb) {
-	info("开始构建棋手");
-	copyable_struct_t* cs = build_use_with_bias(pb->board_size, pb->komi);
-	player_t* p = player_new(pb->threads, cs);
-	board_t* b = p->board;
-	coord_t* c = b->coord;
-	info("创建转换表");
-	transposition_table_t* table = transposition_table_new(pb->memory, simple_search_node_new(c), c);
-	return p;
 }

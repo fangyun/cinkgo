@@ -2,7 +2,6 @@
 #define CINKGO_PLAYER_BUILDER_H_
 
 #include <stdbool.h>
-#include "player.h"
 
 typedef struct{
 	int bias_delay;
@@ -21,7 +20,6 @@ typedef struct{
 	char* manager_type;
 } player_builder_t;
 
-player_t* player_builder_build();
 player_builder_t* player_builder_new();
 
 #endif /* CINKGO_PLAYER_BUILDER_H_ */

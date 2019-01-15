@@ -9,35 +9,35 @@
 #include "../feature/atari_observer.h"
 
 copyable_struct_t* copyable_struct_new() {
-	copyable_struct_t* cs = malloc(sizeof(copyable_struct_t));
+	copyable_struct_t* cs = calloc(1, sizeof(copyable_struct_t));
 	return cs;
 }
 
 copyable_struct_t* copyable_struct_copy(copyable_struct_t* stuff) {
-	copyable_struct_t* cs = malloc(sizeof(copyable_struct_t));
+	copyable_struct_t* cs = calloc(1, sizeof(copyable_struct_t));
 	memcpy(cs, stuff, sizeof(copyable_struct_t));
 	return cs;
 }
 
-copyable_struct_t* build_basic_parts(int width, double komi) {
+copyable_struct_t* build_basic_parts(player_builder_t* pb) {
 	copyable_struct_t* cs = copyable_struct_new();
-	board_t* board = board_new(width);
-	g_list_append(cs->contents, board);
-	chinese_playout_scorer_t* scorer = chinese_playout_scorer_new(board, komi);
-	g_list_append(cs->contents, scorer);
-	g_list_append(cs->contents, stone_count_observer_new(board, scorer));
-	g_list_append(cs->contents, history_observer_new(board));
-	g_list_append(cs->contents, chinese_final_scorer_new(board, komi));
+	board_t* board = board_new(pb);
+	cs->contents = g_list_append(cs->contents, board);
+	chinese_playout_scorer_t* scorer = chinese_playout_scorer_new(board, pb->komi);
+	cs->contents = g_list_append(cs->contents, scorer);
+	cs->contents = g_list_append(cs->contents, stone_count_observer_new(board, scorer));
+	cs->contents = g_list_append(cs->contents, history_observer_new(board));
+	cs->contents = g_list_append(cs->contents, chinese_final_scorer_new(board, pb->komi));
 	return cs;
 }
 
-copyable_struct_t* build_use_with_bias(int width, double komi) {
-	copyable_struct_t* base = build_basic_parts(width, komi);
+copyable_struct_t* build_use_with_bias(player_builder_t* pb) {
+	copyable_struct_t* base = build_basic_parts(pb);
 	board_t* board = NULL;
-	copyable_struct_get(base->contents, board);
+	//copyable_struct_get(base->contents, board);
 	atari_observer_t* ao = atari_observer_new(board);
 	escape_suggester_t* escape = escape_suggester_new(board, ao, 20);
-	g_list_append(base->contents, escape);
+	base->contents = g_list_append(base->contents, escape);
 	return base;
 }
 

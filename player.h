@@ -1,6 +1,9 @@
 #ifndef CINKGO_PLAYER_H_
 #define CINKGO_PLAYER_H_
 
+#undef G_LOG_DOMAIN
+#define G_LOG_DOMAIN "player"
+
 #include <stdbool.h>
 #include "mcts/copyable_struct.h"
 #include "mcts/time_descender.h"
@@ -9,12 +12,10 @@
 #include "feature/history_observer.h"
 #include "score/chinese_final_scorer.h"
 #include "book/opening_book.h"
-#include "board.h"
-#include "coord.h"
+#include "player_builder.h"
+#include "mcts/transposition_table.h"
 
 typedef struct {
-	board_t* board;
-	coord_t* coord;
 	history_observer_t* history_observer;
 	chinese_final_scorer_t* scorer;
 	mc_runnable_t** runnables;
@@ -24,5 +25,6 @@ typedef struct {
 	bool time_left_was_sent;
 } player_t;
 
+player_t* player_builder_build(player_builder_t* pb);
 player_t* player_new(int threads, copyable_struct_t* stuff);
 #endif /* CINKGO_PLAYER_H_ */
