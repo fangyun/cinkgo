@@ -128,12 +128,15 @@ ifdef MSYS2
         # For dcnn build, caffe msys2 package is probably in the repos now.
         # Otherwise get one from https://github.com/lemonsqueeze/mingw-caffe
         # ('mini' / 'nohdf5' releases allow for smaller static builds)
-
+	
+	unexport INCLUDES
+	INCLUDES=-I. -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include
+	
 	WIN_HAVE_NO_REGEX_SUPPORT=1
 
 	SYS_CFLAGS  := $(TUNE)
 	SYS_LDFLAGS := -pthread -L$(CAFFE_PREFIX)/bin -L$(MINGW_PREFIX)/bin
-	SYS_LIBS    := -lws2_32
+	SYS_LIBS    := -lws2_32 -lglib-2.0 -lintl
 	CUSTOM_CXXFLAGS += -I$(MINGW_PREFIX)/include/OpenBLAS
 
         # Enable mingw-w64 C99 printf() / scanf() layer ?
@@ -187,7 +190,9 @@ else
 # Linux
     # Static build ?
     # LINUX_STATIC=1
-
+	unexport INCLUDES
+	INCLUDES=-I. -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include
+	
 	SYS_CFLAGS  := $(TUNE)
 	SYS_LDFLAGS := -pthread -rdynamic
 	SYS_LIBS    := -lm -lrt -ldl -lglib-2.0
@@ -274,8 +279,6 @@ INSTALL=/usr/bin/install
 endif
 
 export
-unexport INCLUDES
-INCLUDES=-I. -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include
 
 OBJS = $(EXTRA_OBJS) util.o player_builder.o coord.o board.o player.o cinkgo.o 
 

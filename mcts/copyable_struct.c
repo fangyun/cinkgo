@@ -1,12 +1,13 @@
 #include "copyable_struct.h"
-#include "util.h"
-#include "board.h"
+#include "../board.h"
 #include "../feature/history_observer.h"
 #include "../feature/stone_count_observer.h"
 #include "../score/chinese_final_scorer.h"
 #include "../score/chinese_playout_scorer.h"
 #include "../feature/escape_suggester.h"
 #include "../feature/atari_observer.h"
+#include <stdlib.h>
+#include <string.h>
 
 copyable_struct_t* copyable_struct_new() {
 	copyable_struct_t* cs = calloc(1, sizeof(copyable_struct_t));
