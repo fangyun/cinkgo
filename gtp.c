@@ -188,9 +188,12 @@ static parse_code_t cmd_komi(player_t *player, board_t *board, gtp_t *gtp) {
 
 static parse_code_t cmd_play(player_t *player, board_t *board, gtp_t *gtp) {
 	point_t p;
-
 	char *arg;
-	next_tok(arg);
+	if(strcmp(gtp->cmd,"play")==0){
+		next_tok(arg);
+	}else{
+		arg = gtp->cmd; //white,black
+	}
 	p.stone = str2stone(arg);
 	next_tok(arg);
 	p.coord = str2coord(arg, board->width);
@@ -294,6 +297,8 @@ static gtp_command_t commands[] ={
 	{ "clear_board",            cmd_clear_board },
 	{ "komi",                   cmd_komi },
 	{ "play",                   cmd_play },
+	{ "black",					cmd_play },
+	{ "white",					cmd_play },
 	{ "genmove",                cmd_genmove },
 	{ "time_left",              cmd_time_left },
 	{ "place_free_handicap",    cmd_fixed_handicap },
