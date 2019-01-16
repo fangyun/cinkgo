@@ -1,8 +1,9 @@
 #include <ctype.h>
 #include <stdio.h>
-#include "gtp.h"
 #include <stdbool.h>
 #include <stdlib.h>
+#define DEBUG
+#include "gtp.h"
 #include "point.h"
 #include "version.h"
 #include "stone.h"
@@ -189,7 +190,7 @@ static parse_code_t cmd_komi(player_t *player, board_t *board, gtp_t *gtp) {
 static parse_code_t cmd_play(player_t *player, board_t *board, gtp_t *gtp) {
 	point_t p;
 	char *arg;
-	if(strcmp(gtp->cmd,"play")==0){
+	if(strcasecmp(gtp->cmd,"play")==0){
 		next_tok(arg);
 	}else{
 		arg = gtp->cmd; //white,black
@@ -198,18 +199,11 @@ static parse_code_t cmd_play(player_t *player, board_t *board, gtp_t *gtp) {
 	next_tok(arg);
 	p.coord = str2coord(arg, board->width);
 	arg = gtp->next;
-//	char *playerarg = arg;
 	char *reply = NULL;
 
 	if (DEBUGL(5))
 		fprintf(stderr, "got move %d,%d,%d\n", p.stone, coord_x(p.coord, board), coord_y(p.coord, board));
-
-	// This is where kgs starts the timer, not at genmove!
-	//time_start_timer(&ti[stone_other(m.color)]);
-//
-//	if (engine->notify_play)
-//		reply = engine->notify_play(engine, board, &m, enginearg);
-	if (board_play(board, &p) < 0) {
+	if (player_accept_move(player, board, &p) < 0) {
 		if (DEBUGL(0)) {
 			fprintf(stderr, "! ILLEGAL MOVE %d,%d,%d\n", p.stone, coord_x(p.coord, board), coord_y(p.coord, board));
 			board_print(board, stderr);
@@ -311,7 +305,7 @@ static gtp_command_t commands[] ={
 	{ 0, 0 }
 };
 
-parse_code_t gtp_parse_full(player_t* e, board_t *board, char *buf, int id) {
+parse_code_t gtp_parse_full(player_t* player, board_t *board, char *buf, int id) {
 	if (strchr(buf, '#')){
 		*strchr(buf, '#') = 0;
 	}
@@ -329,33 +323,14 @@ parse_code_t gtp_parse_full(player_t* e, board_t *board, char *buf, int id) {
 		return P_OK;
 	}
 
-	if (gtp_is_valid(gtp->cmd)) {
-		char *reply="";
-		parse_code_t c = P_OK;//engine->notify(engine, board, gtp->id, gtp->cmd, gtp->next, &reply);
-		if (c == P_NOREPLY) {
-			gtp->id = GTP_NO_REPLY;
-		} else if (c == P_DONE_OK) {
-			gtp_reply(gtp, reply, NULL);
-			return P_OK;
-		} else if (c == P_DONE_ERROR) {
-			gtp_error(gtp, reply, NULL);
-			/* This is an internal error for the engine, but
-			 * it is still OK from main's point of view. */
-			return P_OK;
-		} else if (c != P_OK) {
-			return c;
-		}
-	}
-
-	for (int i = 0; commands[i].cmd; i++)
+	for (int i = 0; commands[i].cmd; i++){
 		if (!strcasecmp(gtp->cmd, commands[i].cmd)) {
-			parse_code_t ret = commands[i].f(e, board, gtp);
-			/* For functions convenience: no reply means empty reply */
+			parse_code_t ret = commands[i].f(player, board, gtp);
 			if (!gtp->replied)
 				gtp_reply(gtp, NULL);
 			return ret;
 		}
-
+	}
 	gtp_error(gtp, "unknown command", NULL);
 	return P_UNKNOWN_COMMAND;
 }

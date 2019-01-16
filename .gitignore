@@ -2,3 +2,5 @@
 *.o
 *.a
 cinkgo
+cinkgo.exe
+.settings/

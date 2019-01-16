@@ -33,6 +33,7 @@ struct _player_t {
 
 player_t* player_build(player_builder_t* pb, copyable_struct_t* cs);
 player_t* player_new(int threads, copyable_struct_t* stuff);
-void player_done(player_t* e);
-void time_left(player_t* e, int time, stone_t stone);
+void player_done(player_t* p);
+void time_left(player_t* p, int time, stone_t stone);
+int player_accept_move(player_t* player, board_t* board, point_t* point);
 #endif /* CINKGO_PLAYER_H_ */

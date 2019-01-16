@@ -31,3 +31,8 @@ void player_done(player_t* player){
 void time_left(player_t* e, int time, stone_t stone){
 
 }
+
+//TODO
+int player_accept_move(player_t* player, board_t* board, point_t* point){
+	return 0;
+}
