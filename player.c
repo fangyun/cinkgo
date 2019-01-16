@@ -1,3 +1,4 @@
+#define G_LOG_DOMAIN "player"
 #include <stdlib.h>
 #include <glib.h>
 #include <stdbool.h>
@@ -32,7 +33,18 @@ void time_left(player_t* e, int time, stone_t stone){
 
 }
 
-//TODO
 int player_accept_move(player_t* player, board_t* board, point_t* point){
+//TODO
+	g_debug("TODO");
 	return 0;
+}
+
+void player_clear(player_t* player, board_t* board){
+	//TODO
+	g_debug("TODO");
+}
+
+void player_set_handicap(player_t* player){
+	//TODO
+	g_debug("TODO");
 }

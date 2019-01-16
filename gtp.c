@@ -1,8 +1,9 @@
+#define DEBUG
+#define G_LOG_DOMAIN "gtp"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#define DEBUG
 #include "gtp.h"
 #include "point.h"
 #include "version.h"
@@ -98,13 +99,9 @@ void gtp_error(gtp_t *gtp, ...) {
 }
 
 void gtp_final_score_str(board_t *board, player_t *player, char *reply, int len) {
-//	struct move_queue q = { .moves = 0 };
-//	if (engine->dead_group_list)
-//		engine->dead_group_list(engine, board, &q);
-//	floating_t score = board_official_score(board, &q);
-	float score = 0;
-	if (DEBUGL(1))
-		fprintf(stderr, "counted score %.1f\n", score);
+	float score = final_score(player->scorer);
+	if (DEBUGL(LOG_LEVEL_DEBUG))
+		g_debug("counted score %.1f\n", score);
 	if (score == 0)
 		snprintf(reply, len, "0");
 	else if (score > 0)
@@ -161,7 +158,7 @@ static parse_code_t cmd_boardsize(player_t *player, board_t *board, gtp_t *gtp) 
 }
 
 static parse_code_t cmd_clear_board(player_t *player, board_t *board, gtp_t *gtp) {
-	board_clear(board);
+	player_clear(player, board);
 	return P_PLAYER_RESET;
 }
 
@@ -201,11 +198,11 @@ static parse_code_t cmd_play(player_t *player, board_t *board, gtp_t *gtp) {
 	arg = gtp->next;
 	char *reply = NULL;
 
-	if (DEBUGL(5))
-		fprintf(stderr, "got move %d,%d,%d\n", p.stone, coord_x(p.coord, board), coord_y(p.coord, board));
+	if (DEBUGL(LOG_LEVEL_DEBUG))
+		g_debug("got move %d,%d,%d\n", p.stone, coord_x(p.coord, board->width), coord_y(p.coord, board->width));
 	if (player_accept_move(player, board, &p) < 0) {
-		if (DEBUGL(0)) {
-			fprintf(stderr, "! ILLEGAL MOVE %d,%d,%d\n", p.stone, coord_x(p.coord, board), coord_y(p.coord, board));
+		if (DEBUGL(LOG_LEVEL_WARNING)) {
+			g_warning("! ILLEGAL MOVE %d,%d,%d\n", p.stone, coord_x(p.coord, board->width), coord_y(p.coord, board->width));
 			board_print(board, stderr);
 		}
 		gtp_error(gtp, "illegal move", NULL);
@@ -226,13 +223,13 @@ static parse_code_t cmd_genmove(player_t* e, board_t *board, gtp_t *gtp) {
 
 	point_t p = { .coord = idx, .stone = color };
 	if (board_play(board, &p) < 0) {
-		fprintf(stderr, "Attempted to generate an illegal move: [%s, %s]\n", coord2sstr(p.coord, board),
+		fprintf(stderr, "Attempted to generate an illegal move: [%s, %s]\n", coord2sstr(p.coord, board->width),
 				stone2str(p.stone));
 		abort();
 	}
-	char *str = coord2sstr(p.coord, board);
-	if (DEBUGL(4))
-		fprintf(stderr, "playing move %s\n", str);
+	const char *str = coord2sstr(p.coord, board->width);
+	if (DEBUGL(LOG_LEVEL_DEBUG))
+		g_debug("playing move %s\n", str);
 	gtp_reply(gtp, str, NULL);
 	return P_OK;
 }
@@ -240,14 +237,13 @@ static parse_code_t cmd_genmove(player_t* e, board_t *board, gtp_t *gtp) {
 static parse_code_t cmd_fixed_handicap(player_t *player, board_t *board, gtp_t *gtp) {
 	char *arg;
 	next_tok(arg);
-	int stones = atoi(arg);
-
-	gtp_prefix('=', gtp);
-	board_handicap(board, stones, gtp->id == GTP_NO_REPLY ? NULL : stdout);
-	if (gtp->id == GTP_NO_REPLY)
-		return P_OK;
-	putchar('\n');
-	gtp_flush();
+	int handicapSize = atoi(arg);
+	if (handicapSize >= 2 && handicapSize <= 9) {
+		player_set_handicap(player);
+		gtp_reply(gtp, NULL);
+	}else{
+		gtp_error(gtp, "无效的让子大小");
+	}
 	return P_OK;
 }
 
@@ -276,6 +272,13 @@ static parse_code_t cmd_time_left(player_t *player, board_t *board, gtp_t *gtp) 
 }
 
 static parse_code_t cmd_final_status_list(player_t *player, board_t *board, gtp_t *gtp) {
+	char *status;
+	next_tok(status);
+	if (!strcmp(status,"dead")) {
+		gtp_reply(gtp,"TODO", NULL);
+	} else if (!strcmp(status,"alive")) {
+		gtp_reply(gtp, "TODO",NULL);
+	}
 	return P_OK;
 }
 
@@ -295,7 +298,6 @@ static gtp_command_t commands[] ={
 	{ "white",					cmd_play },
 	{ "genmove",                cmd_genmove },
 	{ "time_left",              cmd_time_left },
-	{ "place_free_handicap",    cmd_fixed_handicap },
 	{ "fixed_handicap",         cmd_fixed_handicap },
 	{ "final_score",            cmd_final_score },
 	{ "final_status_list",      cmd_final_status_list },

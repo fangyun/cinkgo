@@ -1,7 +1,6 @@
 #ifndef CINKGO_BOARD_H_
 #define CINKGO_BOARD_H_
 
-#include "comparable.h"
 #include "stone.h"
 #include "point.h"
 #include <stdio.h>
@@ -34,9 +33,7 @@ typedef struct {
 } board_statics_t;
 
 board_t* board_new(player_builder_t* pb);
-comparable_t* comparable_board_new(player_builder_t* pb);
 void board_clear(board_t* board);
-void board_handicap(board_t* board, stone_t stone, FILE* file);
 int board_play(board_t* board, point_t* p);
 void board_print(board_t* board, FILE* file);
 int board_size(board_t* board);

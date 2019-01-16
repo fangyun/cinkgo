@@ -20,6 +20,6 @@ typedef struct{
 	char* manager_type;
 } player_builder_t;
 
-player_builder_t* engine_builder_new();
+player_builder_t* player_builder_new();
 
 #endif /* CINKGO_PLAYER_BUILDER_H_ */

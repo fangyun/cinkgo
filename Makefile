@@ -280,7 +280,7 @@ endif
 
 export
 
-OBJS = $(EXTRA_OBJS) util.o player_builder.o coord_system.o board.o player.o gtp.o stone.o point.o cinkgo.o 
+OBJS = $(EXTRA_OBJS) util.o player_builder.o coord_system.o board.o player.o gtp.o stone.o point.o comparable.o debug.o cinkgo.o 
 
 # Low-level dependencies last
 SUBDIRS   = $(EXTRA_SUBDIRS) mcts thirdparty uct utils feature score book

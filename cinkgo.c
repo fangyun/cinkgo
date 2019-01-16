@@ -1,4 +1,5 @@
 #define DEBUG
+#define G_LOG_DOMAIN "cinkgo"
 #include <getopt.h>
 #include <stdlib.h>
 #include "cinkgo.h"
@@ -10,8 +11,7 @@
 
 int debug_level = 3;
 
-comparable_new_t comparable_new[TYPE_MAX] = { comparable_board_new, comparable_coord_new,
-		comparable_history_observer_new, comparable_chinese_final_scorer_new };
+comparable_new_t comparable_new[TYPE_MAX] = { comparable_board_new, comparable_history_observer_new, comparable_chinese_final_scorer_new };
 
 static struct option longopts[] = {
 		{ "biasdelay", required_argument, 0, OPT_BIASDELAY },
@@ -75,8 +75,8 @@ static void show_version(FILE *s) {
 	fprintf(s, "%s\n\n", CINKGO_VERBUILD);
 }
 
-static void build_engine(int argc, char* argv[], cinkgo_t* cgo) {
-	player_builder_t* player_builder = engine_builder_new();
+static void build_player(int argc, char* argv[], cinkgo_t* cgo) {
+	player_builder_t* player_builder = player_builder_new();
 	int opt;
 	int option_index;
 	/* Leading ':' -> we handle error messages. */
@@ -122,7 +122,7 @@ static void build_engine(int argc, char* argv[], cinkgo_t* cgo) {
 			player_builder->threads = atoi(optarg);
 			break;
 		case 'd':
-			debug_level = atoi(optarg);
+			debug_level = log_level(optarg);
 			break;
 		case 'o':
 			cgo->log = fopen(optarg, "w");
@@ -153,7 +153,7 @@ static void build_engine(int argc, char* argv[], cinkgo_t* cgo) {
 	}
 	cgo->player_builder = player_builder;
 	copyable_struct_t* cs = build_use_with_bias(player_builder);
-	cgo->board = (board_t*)copyable_struct_get(cs, T_BOARD);
+	cgo->board = (board_t*)(copyable_struct_get(cs, T_BOARD)->data);
 	cgo->player = player_build(player_builder, cs);
 }
 
@@ -170,18 +170,18 @@ void cinkgo_done(){
 
 int main(int argc, char *argv[]) {
 	cinkgo_t* cgo = cinkgo_new();
-	build_engine(argc, argv, cgo);
+	build_player(argc, argv, cgo);
 	init_command_line_args(argc, argv, cgo);
 
 	char buf[4096];
 	do {
-		if (DEBUGL(1)) {
-			fprintf(stderr, "IN: %s", buf);
+		if (DEBUGL(LOG_LEVEL_DEBUG)) {
+			g_debug("IN: %s", buf);
 		}
 		parse_code_t c = gtp_parse(cgo->player, cgo->board, buf);
 		if (c == P_PLAYER_RESET) {
 			player_done(cgo->player);
-			build_engine(argc, argv, cgo);
+			build_player(argc, argv, cgo);
 		}
 	} while (fgets(buf, 4096, stdin));
 	free(cgo);

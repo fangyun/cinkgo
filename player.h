@@ -1,9 +1,6 @@
 #ifndef CINKGO_PLAYER_H_
 #define CINKGO_PLAYER_H_
 
-#undef G_LOG_DOMAIN
-#define G_LOG_DOMAIN "engine"
-
 #include <stdbool.h>
 #include "mcts/copyable_struct.h"
 #include "mcts/time_descender.h"
@@ -33,7 +30,9 @@ struct _player_t {
 
 player_t* player_build(player_builder_t* pb, copyable_struct_t* cs);
 player_t* player_new(int threads, copyable_struct_t* stuff);
+void player_clear(player_t* player, board_t* board);
 void player_done(player_t* p);
 void time_left(player_t* p, int time, stone_t stone);
 int player_accept_move(player_t* player, board_t* board, point_t* point);
+void player_set_handicap(player_t* player);
 #endif /* CINKGO_PLAYER_H_ */

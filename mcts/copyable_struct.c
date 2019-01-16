@@ -24,13 +24,13 @@ copyable_struct_t* copyable_struct_copy(copyable_struct_t* stuff) {
 
 copyable_struct_t* build_basic_parts(player_builder_t* pb) {
 	copyable_struct_t* cs = copyable_struct_new();
-	comparable_t* cb = comparable_new[T_BOARD](pb);
-	cs->contents = g_list_append(cs->contents, cb);
-	chinese_playout_scorer_t* scorer = chinese_playout_scorer_new(cb->data, pb->komi);
-	cs->contents = g_list_append(cs->contents, scorer);
-	cs->contents = g_list_append(cs->contents, stone_count_observer_new(cb->data, scorer));
-	cs->contents = g_list_append(cs->contents, history_observer_new(cb->data));
-	cs->contents = g_list_append(cs->contents, comparable_new[T_SCORER](pb));
+	comparable_t* cmp_board = comparable_new[T_BOARD](pb, NULL);
+	cs->contents = g_list_append(cs->contents, cmp_board);
+	//chinese_playout_scorer_t* scorer = chinese_playout_scorer_new(cb->data, pb->komi);
+	//cs->contents = g_list_append(cs->contents, scorer);
+	//cs->contents = g_list_append(cs->contents, stone_count_observer_new(cb->data, scorer));
+	cs->contents = g_list_append(cs->contents, comparable_new[T_HISTORY_OBSERVER](pb, cmp_board->data));
+	cs->contents = g_list_append(cs->contents, comparable_new[T_SCORER](pb, cmp_board->data));
 	return cs;
 }
 
@@ -49,8 +49,8 @@ copyable_struct_t* build_use_with_bias(player_builder_t* eb) {
 	copyable_struct_t* base = build_basic_parts(eb);
 	comparable_t* cb = copyable_struct_get(base, T_BOARD);
 	atari_observer_t* ao = atari_observer_new(cb->data);
-	escape_suggester_t* escape = escape_suggester_new(cb->data, ao, 20);
-	base->contents = g_list_append(base->contents, escape);
+//	escape_suggester_t* escape = escape_suggester_new(cb->data, ao, 20);
+//	base->contents = g_list_append(base->contents, escape);
 	return base;
 }
 

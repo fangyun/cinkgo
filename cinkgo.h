@@ -1,9 +1,7 @@
 #ifndef CINKGO_H_
 #define CINKGO_H_
-
 #include <stdio.h>
 #include <glib.h>
-
 #include "player.h"
 #include "player_builder.h"
 

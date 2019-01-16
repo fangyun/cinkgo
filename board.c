@@ -11,19 +11,7 @@ board_t* board_new(player_builder_t* pb) {
 	return b;
 }
 
-comparable_t* comparable_board_new(player_builder_t* pb) {
-	comparable_t* c = malloc(sizeof(comparable_t));
-	board_t* b = board_new(pb);
-	c->data = b;
-	c->type = T_BOARD;
-	return c;
-}
-
 void board_clear(board_t* board){
-
-}
-
-void board_handicap(board_t* board, stone_t stone, FILE* file){
 
 }
 

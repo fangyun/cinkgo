@@ -3,12 +3,14 @@
 
 #include <stdbool.h>
 
-#define INFO_LEVEL 10
-#define DEBUG_LEVEL 5
-#define TRACE_LEVEL 1
+typedef enum {
+	LOG_LEVEL_FAIL, LOG_LEVEL_ERROR, LOG_LEVEL_WARNING, LOG_LEVEL_INFO, LOG_LEVEL_DEBUG, LOG_LEVEL_TRACE
+} log_level_t;
+
+log_level_t log_level(char* str);
 
 #ifdef DEBUG
-#define DEBUGL_(l, n) (unlikely((l) > (n)))
+#define DEBUGL_(l, n) (unlikely((l) >= (n)))
 #define DEBUG_MODE (true)
 #else
 #define DEBUGL_(l, n) (false)
