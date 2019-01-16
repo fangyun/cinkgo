@@ -2,9 +2,9 @@
 #define CINKGO_COORD_SYSTEM_H_
 
 #include "comparable.h"
-#include "engine_builder.h"
 #include "point.h"
 #include "board.h"
+#include "player_builder.h"
 
 extern const int NO_POINT;
 extern const int PASS;
@@ -28,7 +28,11 @@ typedef struct {
 } coord_system_t;
 
 
-coord_system_t* coord_system_new(engine_builder_t* pb);
-comparable_t* comparable_coord_new(engine_builder_t* pb);
+coord_system_t* coord_system_new(player_builder_t* pb);
+comparable_t* comparable_coord_new(player_builder_t* pb);
+char * coord2bstr(char *buf, coord_t c, board_t *board);
+char * coord2str(coord_t c, board_t *board);
+char * coord2sstr(coord_t c, board_t *board);
+coord_t str2coord(char *str, int size);
 
 #endif /* CINKGO_COORD_SYSTEM_H_ */

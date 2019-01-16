@@ -76,50 +76,50 @@ static void show_version(FILE *s) {
 }
 
 static void build_engine(int argc, char* argv[], cinkgo_t* cgo) {
-	engine_builder_t* engine_builder = engine_builder_new();
+	player_builder_t* player_builder = engine_builder_new();
 	int opt;
 	int option_index;
 	/* Leading ':' -> we handle error messages. */
 	while ((opt = getopt_long(argc, argv, ":hvd:o:t:", longopts, &option_index)) != -1) {
 		switch (opt) {
 		case OPT_BIASDELAY:
-			engine_builder->bias_delay = atoi(optarg);
+			player_builder->bias_delay = atoi(optarg);
 			break;
 		case OPT_BOARDSIZE:
-			engine_builder->board_size = atoi(optarg);
+			player_builder->board_size = atoi(optarg);
 			break;
 		case OPT_NOBOOK:
-			engine_builder->book = false;
+			player_builder->book = false;
 			break;
 		case OPT_KOMI:
-			engine_builder->komi = atof(optarg);
+			player_builder->komi = atof(optarg);
 			break;
 		case OPT_NOLGRF2:
-			engine_builder->lgrf2 = false;
+			player_builder->lgrf2 = false;
 			break;
 		case OPT_MEMORY:
-			engine_builder->memory = atoi(optarg);
+			player_builder->memory = atoi(optarg);
 			break;
 		case OPT_MSEC:
-			engine_builder->msec = atoi(optarg);
+			player_builder->msec = atoi(optarg);
 			break;
 		case OPT_PONDER:
-			engine_builder->ponder = true;
+			player_builder->ponder = true;
 			break;
 		case OPT_NORAVE:
-			engine_builder->rave = false;
+			player_builder->rave = false;
 			break;
 		case OPT_SHAPE_BIAS:
-			engine_builder->shape_bias = atoi(optarg);
+			player_builder->shape_bias = atoi(optarg);
 			break;
 		case OPT_SHAPE_PATTERN_SIZE:
-			engine_builder->shape_pattern_size = atoi(optarg);
+			player_builder->shape_pattern_size = atoi(optarg);
 			break;
 		case OPT_SHAPE_SCALING_FACTOR:
-			engine_builder->shape_scaling_factor = atof(optarg);
+			player_builder->shape_scaling_factor = atof(optarg);
 			break;
 		case OPT_THREADS:
-			engine_builder->threads = atoi(optarg);
+			player_builder->threads = atoi(optarg);
 			break;
 		case 'd':
 			debug_level = atoi(optarg);
@@ -137,7 +137,7 @@ static void build_engine(int argc, char* argv[], cinkgo_t* cgo) {
 			usage();
 			exit(0);
 		case 't':
-			engine_builder->manager_type = optarg;
+			player_builder->manager_type = optarg;
 			break;
 		case 'v':
 			show_version(stdout);
@@ -151,10 +151,10 @@ static void build_engine(int argc, char* argv[], cinkgo_t* cgo) {
 					"Try 'cinkgo --help' for more information.\n", argv[optind - 1]);
 		}
 	}
-	cgo->engine_builder = engine_builder;
-	copyable_struct_t* cs = build_use_with_bias(engine_builder);
+	cgo->player_builder = player_builder;
+	copyable_struct_t* cs = build_use_with_bias(player_builder);
 	cgo->board = (board_t*)copyable_struct_get(cs, T_BOARD);
-	cgo->engine = engine_builder_build(engine_builder, cs);
+	cgo->player = player_build(player_builder, cs);
 }
 
 static void init_command_line_args(int argc, char *argv[], cinkgo_t* cinkgo) {
@@ -178,9 +178,9 @@ int main(int argc, char *argv[]) {
 		if (DEBUGL(1)) {
 			fprintf(stderr, "IN: %s", buf);
 		}
-		parse_code_t c = gtp_parse(cgo->engine, cgo->board, buf);
+		parse_code_t c = gtp_parse(cgo->player, cgo->board, buf);
 		if (c == P_PLAYER_RESET) {
-			engine_done(cgo->engine);
+			player_done(cgo->player);
 			build_engine(argc, argv, cgo);
 		}
 	} while (fgets(buf, 4096, stdin));

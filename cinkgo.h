@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <glib.h>
 
-#include "engine.h"
-#include "engine_builder.h"
+#include "player.h"
+#include "player_builder.h"
 
 #define OPT_BIASDELAY   256
 #define OPT_BOARDSIZE   257
@@ -26,8 +26,8 @@ typedef struct {
 	char* command_line_args;
 	GList* known_commands;
 	FILE* log;
-	engine_t* engine;
-	engine_builder_t* engine_builder;
+	player_t* player;
+	player_builder_t* player_builder;
 	board_t* board;
 } cinkgo_t;
 

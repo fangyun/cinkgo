@@ -2,12 +2,12 @@
 #define CINKGO_BOARD_H_
 
 #include "comparable.h"
-#include "engine_builder.h"
 #include "stone.h"
 #include "point.h"
 #include <stdio.h>
 #include "thirdparty/hash.h"
 #include <inttypes.h>
+#include "player_builder.h"
 
 #define BOARD_MAX_SIZE 19
 #define BOARD_MAX_COORDS  ((BOARD_MAX_SIZE+2) * (BOARD_MAX_SIZE+2) )
@@ -33,8 +33,8 @@ typedef struct {
 	uint8_t coord[BOARD_MAX_COORDS][2];
 } board_statics_t;
 
-board_t* board_new(engine_builder_t* pb);
-comparable_t* comparable_board_new(engine_builder_t* pb);
+board_t* board_new(player_builder_t* pb);
+comparable_t* comparable_board_new(player_builder_t* pb);
 void board_clear(board_t* board);
 void board_handicap(board_t* board, stone_t stone, FILE* file);
 int board_play(board_t* board, point_t* p);

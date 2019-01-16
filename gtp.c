@@ -1,17 +1,19 @@
+#include <ctype.h>
 #include <stdio.h>
 #include "gtp.h"
 #include <stdbool.h>
 #include <stdlib.h>
 #include "point.h"
 #include "version.h"
-#include "engine.h"
 #include "stone.h"
 #include "coord_system.h"
 #include "board.h"
 #include "cinkgo.h"
 #include "debug.h"
+#include "player.h"
+#include "util.h"
 
-typedef parse_code_t (*gtp_func_t)(engine_t *engine, board_t *board, gtp_t *gtp);
+typedef parse_code_t (*gtp_func_t)(player_t *player, board_t *board, gtp_t *gtp);
 
 typedef struct
 {
@@ -94,7 +96,7 @@ void gtp_error(gtp_t *gtp, ...) {
 	va_end(params);
 }
 
-void gtp_final_score_str(board_t *board, engine_t *engine, char *reply, int len) {
+void gtp_final_score_str(board_t *board, player_t *player, char *reply, int len) {
 //	struct move_queue q = { .moves = 0 };
 //	if (engine->dead_group_list)
 //		engine->dead_group_list(engine, board, &q);
@@ -110,32 +112,32 @@ void gtp_final_score_str(board_t *board, engine_t *engine, char *reply, int len)
 		snprintf(reply, len, "B+%.1f", -score);
 }
 
-static parse_code_t cmd_protocol_version(engine_t *engine, board_t *board, gtp_t *gtp) {
+static parse_code_t cmd_protocol_version(player_t *player, board_t *board, gtp_t *gtp) {
 	gtp_reply(gtp, "2", NULL);
 	return P_OK;
 }
 
-static parse_code_t cmd_name(engine_t *engine, board_t *board, gtp_t *gtp) {
+static parse_code_t cmd_name(player_t *player, board_t *board, gtp_t *gtp) {
 	gtp_reply(gtp, "Cinkgo ", NULL);
 	return P_OK;
 }
 
-static parse_code_t cmd_echo(engine_t *engine, board_t *board, gtp_t *gtp) {
+static parse_code_t cmd_echo(player_t *player, board_t *board, gtp_t *gtp) {
 	gtp_reply(gtp, gtp->next, NULL);
 	return P_OK;
 }
 
-static parse_code_t cmd_version(engine_t *engine, board_t *board, gtp_t *gtp) {
+static parse_code_t cmd_version(player_t *player, board_t *board, gtp_t *gtp) {
 	gtp_reply(gtp, CINKGO_VERSION, ": ", " Have a nice game!", NULL);
 	return P_OK;
 }
 
-static parse_code_t cmd_list_commands(engine_t *engine, board_t *board, gtp_t *gtp) {
+static parse_code_t cmd_list_commands(player_t *player, board_t *board, gtp_t *gtp) {
 	gtp_reply(gtp, known_commands(), NULL);
 	return P_OK;
 }
 
-static parse_code_t cmd_known_command(engine_t *engine, board_t *board, gtp_t *gtp) {
+static parse_code_t cmd_known_command(player_t *player, board_t *board, gtp_t *gtp) {
 	char *arg;
 	next_tok(arg);
 	if (gtp_is_valid(arg)) {
@@ -146,23 +148,23 @@ static parse_code_t cmd_known_command(engine_t *engine, board_t *board, gtp_t *g
 	return P_OK;
 }
 
-static parse_code_t cmd_quit(engine_t *engine, board_t *board, gtp_t *gtp) {
+static parse_code_t cmd_quit(player_t *player, board_t *board, gtp_t *gtp) {
 	gtp_reply(gtp, NULL);
 	cinkgo_done();
 	exit(0);
 }
 
-static parse_code_t cmd_boardsize(engine_t *engine, board_t *board, gtp_t *gtp) {
+static parse_code_t cmd_boardsize(player_t *player, board_t *board, gtp_t *gtp) {
 	gtp_error(gtp, "board size cannot be changed", NULL);
 	return P_OK;
 }
 
-static parse_code_t cmd_clear_board(engine_t *engine, board_t *board, gtp_t *gtp) {
+static parse_code_t cmd_clear_board(player_t *player, board_t *board, gtp_t *gtp) {
 	board_clear(board);
 	return P_PLAYER_RESET;
 }
 
-static parse_code_t cmd_kgs_game_over(engine_t *engine, board_t *board, gtp_t *gtp) {
+static parse_code_t cmd_kgs_game_over(player_t *player, board_t *board, gtp_t *gtp) {
 	/* The game may not be really over, just adjourned.
 	 * Do not clear the board to avoid illegal moves
 	 * if the game is resumed immediately after. KGS
@@ -177,14 +179,14 @@ static parse_code_t cmd_kgs_game_over(engine_t *engine, board_t *board, gtp_t *g
 	return P_OK;
 }
 
-static parse_code_t cmd_komi(engine_t *engine, board_t *board, gtp_t *gtp) {
+static parse_code_t cmd_komi(player_t *player, board_t *board, gtp_t *gtp) {
 	char *arg;
 	next_tok(arg);
 	sscanf(arg, "%f", &board->komi);
 	return P_OK;
 }
 
-static parse_code_t cmd_play(engine_t *engine, board_t *board, gtp_t *gtp) {
+static parse_code_t cmd_play(player_t *player, board_t *board, gtp_t *gtp) {
 	point_t p;
 
 	char *arg;
@@ -193,7 +195,7 @@ static parse_code_t cmd_play(engine_t *engine, board_t *board, gtp_t *gtp) {
 	next_tok(arg);
 	p.coord = str2coord(arg, board->width);
 	arg = gtp->next;
-	char *enginearg = arg;
+//	char *playerarg = arg;
 	char *reply = NULL;
 
 	if (DEBUGL(5))
@@ -216,7 +218,7 @@ static parse_code_t cmd_play(engine_t *engine, board_t *board, gtp_t *gtp) {
 	return P_OK;
 }
 
-static parse_code_t cmd_genmove(engine_t* e, board_t *board, gtp_t *gtp) {
+static parse_code_t cmd_genmove(player_t* e, board_t *board, gtp_t *gtp) {
 	char *arg;
 	next_tok(arg);
 	stone_t color = str2stone(arg);
@@ -231,14 +233,14 @@ static parse_code_t cmd_genmove(engine_t* e, board_t *board, gtp_t *gtp) {
 				stone2str(p.stone));
 		abort();
 	}
-	char *str = coord2sstr(p, board);
+	char *str = coord2sstr(p.coord, board);
 	if (DEBUGL(4))
 		fprintf(stderr, "playing move %s\n", str);
 	gtp_reply(gtp, str, NULL);
 	return P_OK;
 }
 
-static parse_code_t cmd_fixed_handicap(engine_t *engine, board_t *board, gtp_t *gtp) {
+static parse_code_t cmd_fixed_handicap(player_t *player, board_t *board, gtp_t *gtp) {
 	char *arg;
 	next_tok(arg);
 	int stones = atoi(arg);
@@ -252,31 +254,31 @@ static parse_code_t cmd_fixed_handicap(engine_t *engine, board_t *board, gtp_t *
 	return P_OK;
 }
 
-static parse_code_t cmd_final_score(engine_t *engine, board_t *board, gtp_t *gtp) {
+static parse_code_t cmd_final_score(player_t *player, board_t *board, gtp_t *gtp) {
 	char str[64];
-	gtp_final_score_str(board, engine, str, sizeof(str));
+	gtp_final_score_str(board, player, str, sizeof(str));
 	gtp_reply(gtp, str, NULL);
 	return P_OK;
 }
 
-static parse_code_t cmd_showboard(engine_t *engine, board_t *board, gtp_t *gtp) {
+static parse_code_t cmd_showboard(player_t *player, board_t *board, gtp_t *gtp) {
 	board_print(board, stderr);
 	return P_OK;
 }
 
-static parse_code_t cmd_time_left(engine_t *engine, engine_t* e, board_t *board, gtp_t *gtp) {
+static parse_code_t cmd_time_left(player_t *player, board_t *board, gtp_t *gtp) {
 	char *arg;
 	next_tok(arg);
-	stone_t color = str2stone(arg);
+	//stone_t color = str2stone(arg);
 	next_tok(arg);
 	int time = atoi(arg);
 	next_tok(arg);
 	int stones = atoi(arg);
-	time_left(e, time, stones);
+	time_left(player, time, stones);
 	return P_OK;
 }
 
-static parse_code_t cmd_final_status_list(engine_t *engine, board_t *board, gtp_t *gtp) {
+static parse_code_t cmd_final_status_list(player_t *player, board_t *board, gtp_t *gtp) {
 	return P_OK;
 }
 
@@ -304,7 +306,7 @@ static gtp_command_t commands[] ={
 	{ 0, 0 }
 };
 
-parse_code_t gtp_parse_full(engine_t* e, board_t *board, char *buf, int id) {
+parse_code_t gtp_parse_full(player_t* e, board_t *board, char *buf, int id) {
 	if (strchr(buf, '#')){
 		*strchr(buf, '#') = 0;
 	}
@@ -323,7 +325,7 @@ parse_code_t gtp_parse_full(engine_t* e, board_t *board, char *buf, int id) {
 	}
 
 	if (gtp_is_valid(gtp->cmd)) {
-		char *reply;
+		char *reply="";
 		parse_code_t c = P_OK;//engine->notify(engine, board, gtp->id, gtp->cmd, gtp->next, &reply);
 		if (c == P_NOREPLY) {
 			gtp->id = GTP_NO_REPLY;
@@ -353,6 +355,6 @@ parse_code_t gtp_parse_full(engine_t* e, board_t *board, char *buf, int id) {
 	return P_UNKNOWN_COMMAND;
 }
 
-parse_code_t gtp_parse(engine_t* e, board_t *board, char *buf) {
+parse_code_t gtp_parse(player_t* e, board_t *board, char *buf) {
 	return gtp_parse_full(e, board, buf, -1);
 }

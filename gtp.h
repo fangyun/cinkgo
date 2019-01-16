@@ -2,7 +2,7 @@
 #define CINKGO_GTP_H_
 
 #include "board.h"
-#include "engine.h"
+#include "player.h"
 
 #define GTP_NO_REPLY (-2)
 typedef enum {
@@ -24,7 +24,7 @@ typedef struct {
 		gtp->next += strspn(gtp->next, " \t\r\n"); \
 	}
 
-parse_code_t gtp_parse_full(engine_t* e, board_t *board, char *buf, int id);
-parse_code_t gtp_parse(engine_t* e, board_t *board, char *buf);
+parse_code_t gtp_parse_full(player_t* e, board_t *board, char *buf, int id);
+parse_code_t gtp_parse(player_t* e, board_t *board, char *buf);
 
 #endif /* CINKGO_GTP_H_ */

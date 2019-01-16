@@ -22,7 +22,7 @@ copyable_struct_t* copyable_struct_copy(copyable_struct_t* stuff) {
 	return cs;
 }
 
-copyable_struct_t* build_basic_parts(engine_builder_t* pb) {
+copyable_struct_t* build_basic_parts(player_builder_t* pb) {
 	copyable_struct_t* cs = copyable_struct_new();
 	comparable_t* cb = comparable_new[T_BOARD](pb);
 	cs->contents = g_list_append(cs->contents, cb);
@@ -45,7 +45,7 @@ comparable_t* copyable_struct_get(copyable_struct_t* cs, type_t type) {
 	return NULL;
 }
 
-copyable_struct_t* build_use_with_bias(engine_builder_t* eb) {
+copyable_struct_t* build_use_with_bias(player_builder_t* eb) {
 	copyable_struct_t* base = build_basic_parts(eb);
 	comparable_t* cb = copyable_struct_get(base, T_BOARD);
 	atari_observer_t* ao = atari_observer_new(cb->data);

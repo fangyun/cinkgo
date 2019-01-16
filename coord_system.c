@@ -11,13 +11,13 @@ const char* PASS_STR = "PASS";
 const char* RESIGN_STR = "resign";
 static char atoz[] = "abcdefghjklmnopqrstuvwxyz";
 
-coord_system_t* coord_system_new(engine_builder_t* pb) {
+coord_system_t* coord_system_new(player_builder_t* pb) {
 	coord_system_t* c = malloc(sizeof(coord_system_t));
 	c->width = pb->board_size;
 	return c;
 }
 
-comparable_t* comparable_coord_new(engine_builder_t* pb) {
+comparable_t* comparable_coord_new(player_builder_t* pb) {
 	comparable_t* c = malloc(sizeof(comparable_t));
 	coord_system_t* co = coord_system_new(pb);
 	c->data = co;
@@ -25,11 +25,11 @@ comparable_t* comparable_coord_new(engine_builder_t* pb) {
 	return c;
 }
 
-char * coord2bstr(char *buf, coord_t c, struct board *board) {
+char * coord2bstr(char *buf, coord_t c, board_t *board) {
 	if (is_pass(c)) {
 		return PASS_STR;
 	} else if (is_resign(c)) {
-		return "resign";
+		return RESIGN_STR;
 	} else {
 		/* Some GTP servers are broken and won't grok lowercase coords */
 		snprintf(buf, 4, "%c%u", toupper(atoz[coord_x(c, board) - 1]), coord_y(c, board));
@@ -38,14 +38,14 @@ char * coord2bstr(char *buf, coord_t c, struct board *board) {
 }
 
 /* Return coordinate in dynamically allocated buffer. */
-char * coord2str(coord_t c, struct board *board) {
+char * coord2str(coord_t c, board_t *board) {
 	char buf[256];
 	return strdup(coord2bstr(buf, c, board));
 }
 
 /* Return coordinate in statically allocated buffer, with some backlog for
  * multiple independent invocations. Useful for debugging. */
-char * coord2sstr(coord_t c, struct board *board) {
+char * coord2sstr(coord_t c, board_t *board) {
 	static char *b;
 	static char bl[10][4];
 	static int bi;
@@ -65,7 +65,7 @@ coord_t str2coord(char *str, int size) {
 }
 
 /* Must match rotations in pthashes_init() */
-coord_t rotate_coord(struct board *b, coord_t c, int rot) {
+coord_t rotate_coord(board_t *b, coord_t c, int rot) {
 	assert(c != PASS);
 	int size = real_board_size(b);
 	int x = coord_x(c, b);

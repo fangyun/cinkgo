@@ -1,14 +1,15 @@
+
 #define DEBUG
 #include <stdio.h>
-#include "engine_builder.h"
+#include "player_builder.h"
 #include "util.h"
 #include "debug.h"
 #include "mcts/copyable_struct.h"
 #include "mcts/simple_search_node.h"
 #include "mcts/transposition_table.h"
 
-engine_builder_t* engine_builder_new() {
-	engine_builder_t* pb = malloc(sizeof(engine_builder_t));
+player_builder_t* engine_builder_new() {
+	player_builder_t* pb = malloc(sizeof(player_builder_t));
 	pb->bias_delay = 800;
 	pb->komi = 7.5;
 	pb->threads = 2;
