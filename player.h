@@ -14,19 +14,15 @@
 #include "board.h"
 #include "stone.h"
 
-typedef struct _player_t player_t;
-typedef short (*player_genmove_t)(player_t *e, board_t *b, stone_t color, bool pass_all_alive);
-
-struct _player_t {
+typedef struct {
 	history_observer_t* history_observer;
 	chinese_final_scorer_t* scorer;
 	mc_runnable_t** runnables;
 	time_descender_t* descender;
-	tree_updater_t* updater;;
+	tree_updater_t* updater;
 	opening_book_t* book;
 	bool time_left_was_sent;
-	player_genmove_t  genmove;
-};
+} player_t;
 
 player_t* player_build(player_builder_t* pb, copyable_struct_t* cs);
 player_t* player_new(int threads, copyable_struct_t* stuff);
@@ -35,4 +31,5 @@ void player_done(player_t* p);
 void time_left(player_t* p, int time, stone_t stone);
 int player_accept_move(player_t* player, board_t* board, point_t* point);
 void player_set_handicap(player_t* player);
+point_t* player_best_move();
 #endif /* CINKGO_PLAYER_H_ */

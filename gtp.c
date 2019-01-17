@@ -35,8 +35,6 @@ static char* known_commands() {
 			continue;
 		str += sprintf(str, "%s\n", commands[i].cmd);
 	}
-
-	str += sprintf(str, "gogui-analyze_commands\n");
 	str[-1] = 0; /* remove last \n */
 	return buf;
 }
@@ -120,13 +118,13 @@ static parse_code_t cmd_name(player_t *player, board_t *board, gtp_t *gtp) {
 	return P_OK;
 }
 
-static parse_code_t cmd_echo(player_t *player, board_t *board, gtp_t *gtp) {
-	gtp_reply(gtp, gtp->next, NULL);
+static parse_code_t cmd_undo(player_t *player, board_t *board, gtp_t *gtp) {
+	gtp_error(gtp, "不能悔棋", NULL);
 	return P_OK;
 }
 
 static parse_code_t cmd_version(player_t *player, board_t *board, gtp_t *gtp) {
-	gtp_reply(gtp, CINKGO_VERSION, ": ", " Have a nice game!", NULL);
+	gtp_reply(gtp, CINKGO_VERSION, ",", " Git commit: ", CINKGO_VERGIT, NULL);
 	return P_OK;
 }
 
@@ -153,7 +151,12 @@ static parse_code_t cmd_quit(player_t *player, board_t *board, gtp_t *gtp) {
 }
 
 static parse_code_t cmd_boardsize(player_t *player, board_t *board, gtp_t *gtp) {
-	gtp_error(gtp, "board size cannot be changed", NULL);
+	char *arg;
+	next_tok(arg);
+	int size = atoi(arg);
+	if (size != 19) {
+		gtp_error(gtp, "棋盘尺寸只支持19×19", NULL);
+	}
 	return P_OK;
 }
 
@@ -167,8 +170,8 @@ static parse_code_t cmd_kgs_game_over(player_t *player, board_t *board, gtp_t *g
 	 * Do not clear the board to avoid illegal moves
 	 * if the game is resumed immediately after. KGS
 	 * may start directly with genmove on resumption. */
-	if (DEBUGL(1)) {
-		fprintf(stderr, "game is over\n");
+	if (DEBUGL(LOG_LEVEL_INFO)) {
+		g_info("对弈结束");
 		fflush(stderr);
 	}
 	/* Sleep before replying, so that kgs doesn't
@@ -181,6 +184,14 @@ static parse_code_t cmd_komi(player_t *player, board_t *board, gtp_t *gtp) {
 	char *arg;
 	next_tok(arg);
 	sscanf(arg, "%f", &board->komi);
+	if(DEBUGL(LOG_LEVEL_INFO)){
+		g_info("rebuild player");
+	}
+	//playerBuilder = playerBuilder.komi(komi);
+	//player = playerBuilder.build();
+	if(DEBUGL(LOG_LEVEL_INFO)){
+		g_info("rebuilt player");
+	}
 	return P_OK;
 }
 
@@ -212,25 +223,22 @@ static parse_code_t cmd_play(player_t *player, board_t *board, gtp_t *gtp) {
 	return P_OK;
 }
 
-static parse_code_t cmd_genmove(player_t* e, board_t *board, gtp_t *gtp) {
+static parse_code_t cmd_genmove(player_t* player, board_t *board, gtp_t *gtp) {
 	char *arg;
 	next_tok(arg);
 	stone_t color = str2stone(arg);
 
-	int idx = (e->book ? fbook_check(board) : NO_POINT);
-	if (is_pass(idx))
-		idx = e->genmove(e, board, color, !strcasecmp(gtp->cmd, "kgs-genmove_cleanup"));
-
-	point_t p = { .coord = idx, .stone = color };
-	if (board_play(board, &p) < 0) {
-		fprintf(stderr, "Attempted to generate an illegal move: [%s, %s]\n", coord2sstr(p.coord, board->width),
-				stone2str(p.stone));
-		abort();
+	point_t* point = player_best_move(player, board, color);
+	if (point->coord == RESIGN) {
+		gtp_reply(gtp, RESIGN_STR, NULL);
+		player_clear(player, board); // to stop threaded players
+	} else {
+		player_accept_move(player, board, point);
+		const char *str = coord2sstr(point->coord, board->width);
+		if (DEBUGL(LOG_LEVEL_DEBUG))
+			g_debug("playing move %s\n", str);
+		gtp_reply(gtp, str, NULL);
 	}
-	const char *str = coord2sstr(p.coord, board->width);
-	if (DEBUGL(LOG_LEVEL_DEBUG))
-		g_debug("playing move %s\n", str);
-	gtp_reply(gtp, str, NULL);
 	return P_OK;
 }
 
@@ -262,12 +270,10 @@ static parse_code_t cmd_showboard(player_t *player, board_t *board, gtp_t *gtp) 
 static parse_code_t cmd_time_left(player_t *player, board_t *board, gtp_t *gtp) {
 	char *arg;
 	next_tok(arg);
-	//stone_t color = str2stone(arg);
+	stone_t stone = str2stone(arg);
 	next_tok(arg);
 	int time = atoi(arg);
-	next_tok(arg);
-	int stones = atoi(arg);
-	time_left(player, time, stones);
+	time_left(player, time, stone);
 	return P_OK;
 }
 
@@ -285,7 +291,7 @@ static parse_code_t cmd_final_status_list(player_t *player, board_t *board, gtp_
 static gtp_command_t commands[] ={
 	{ "protocol_version",       cmd_protocol_version },
 	{ "name",                   cmd_name },
-	{ "echo",                   cmd_echo },
+	{ "undo",                   cmd_undo },
 	{ "version",                cmd_version },
 	{ "list_commands",          cmd_list_commands },
 	{ "known_command",          cmd_known_command },
@@ -303,7 +309,6 @@ static gtp_command_t commands[] ={
 	{ "final_status_list",      cmd_final_status_list },
 	{ "showboard",              cmd_showboard },   	/* ogs */
 	{ "kgs-game_over",          cmd_kgs_game_over },
-	{ "kgs-genmove_cleanup",    cmd_genmove },
 	{ 0, 0 }
 };
 
@@ -333,7 +338,7 @@ parse_code_t gtp_parse_full(player_t* player, board_t *board, char *buf, int id)
 			return ret;
 		}
 	}
-	gtp_error(gtp, "unknown command", NULL);
+	gtp_error(gtp, "未知命令", NULL);
 	return P_UNKNOWN_COMMAND;
 }
 

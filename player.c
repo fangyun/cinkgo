@@ -3,6 +3,7 @@
 #include <glib.h>
 #include <stdbool.h>
 #include "player.h"
+#include "point.h"
 
 player_t* player_new(int threads, copyable_struct_t* stuff) {
 	player_t* p = malloc(sizeof(player_t));
@@ -35,16 +36,19 @@ void time_left(player_t* e, int time, stone_t stone){
 
 int player_accept_move(player_t* player, board_t* board, point_t* point){
 //TODO
-	g_debug("TODO");
 	return 0;
 }
 
 void player_clear(player_t* player, board_t* board){
 	//TODO
-	g_debug("TODO");
 }
 
 void player_set_handicap(player_t* player){
 	//TODO
-	g_debug("TODO");
+}
+
+point_t* player_best_move(player_t *e, board_t *b, stone_t color){
+	//TODO
+	point_t* t = malloc(sizeof(point_t));
+	return t;
 }

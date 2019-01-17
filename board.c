@@ -20,7 +20,7 @@ int board_play(board_t* board, point_t* p){
 }
 
 void board_print(board_t* board, FILE* file){
-
+//TODO
 }
 
 int board_size(board_t* board){
